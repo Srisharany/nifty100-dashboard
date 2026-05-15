@@ -1,0 +1,42 @@
+{% extends 'analytics/base.html' %}
+
+{% block content %}
+
+<h1>Company List</h1>
+
+<form method="GET" style="margin-bottom: 20px;">
+    <input
+        type="text"
+        name="q"
+        placeholder="Search company..."
+        value="{{ query }}"
+        style="padding:10px; width:300px; border-radius:8px; border:1px solid #ccc;"
+    >
+
+    <button
+        type="submit"
+        style="padding:10px 20px; background:#2563eb; color:white; border:none; border-radius:8px;"
+    >
+        Search
+    </button>
+</form>
+
+<table border="1" cellpadding="10" cellspacing="0" width="100%">
+    <tr>
+        <th>Symbol</th>
+        <th>Company Name</th>
+        <th>Action</th>
+    </tr>
+
+    {% for company in companies %}
+    <tr>
+        <td>{{ company.symbol }}</td>
+        <td>{{ company.company_name }}</td>
+        <td>
+            <a href="/company/{{ company.symbol }}/">View Details</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}

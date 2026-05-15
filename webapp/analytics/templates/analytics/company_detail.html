@@ -1,0 +1,161 @@
+{% extends 'analytics/base.html' %}
+
+{% block content %}
+
+<h1>{{ company.company_name }}</h1>
+<p><strong>{{ company.symbol }}</strong></p>
+
+<div style="display:flex; gap:30px; margin:30px 0; flex-wrap:wrap;">
+
+    <div style="padding:20px; border:1px solid #ccc; border-radius:15px; width:220px; background:white;">
+        <h3>ROE</h3>
+        <h1>
+            {% if roe_data %}
+                {{ roe_data.roe }}
+            {% else %}
+                N/A
+            {% endif %}
+        </h1>
+    </div>
+
+    <div style="padding:20px; border:1px solid #ccc; border-radius:15px; width:220px; background:white;">
+        <h3>Sales Growth</h3>
+        <h1>
+            {% if sales_growth %}
+                {{ sales_growth.compounded_sales_growth }}
+            {% else %}
+                N/A
+            {% endif %}
+        </h1>
+    </div>
+
+    <div style="padding:20px; border:1px solid #ccc; border-radius:15px; width:220px; background:white;">
+        <h3>Stock CAGR</h3>
+        <h1>
+            {% if stock_cagr %}
+                {{ stock_cagr.stock_price_cagr }}
+            {% else %}
+                N/A
+            {% endif %}
+        </h1>
+    </div>
+
+</div>
+
+<hr><br>
+
+<h2>Profit & Loss</h2>
+<table border="1" cellpadding="10" cellspacing="0" width="100%">
+    <tr>
+        <th>Year</th>
+        <th>Sales</th>
+        <th>Net Profit</th>
+        <th>EPS</th>
+    </tr>
+    {% for item in profits %}
+    <tr>
+        <td>{{ item.year }}</td>
+        <td>{{ item.sales }}</td>
+        <td>{{ item.net_profit }}</td>
+        <td>{{ item.eps }}</td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="4">No data available</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<br><br>
+
+<h2>Balance Sheet</h2>
+<table border="1" cellpadding="10" cellspacing="0" width="100%">
+    <tr>
+        <th>Year</th>
+        <th>Total Assets</th>
+        <th>Borrowings</th>
+    </tr>
+    {% for item in balances %}
+    <tr>
+        <td>{{ item.year }}</td>
+        <td>{{ item.total_assets }}</td>
+        <td>{{ item.borrowings }}</td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="3">No data available</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<br><br>
+
+<h2>Performance Charts</h2>
+
+<div style="display:flex; gap:30px; flex-wrap:wrap;">
+    <div style="width:45%; background:white; padding:20px; border-radius:12px;">
+        <canvas id="salesChart"></canvas>
+    </div>
+
+    <div style="width:45%; background:white; padding:20px; border-radius:12px;">
+        <canvas id="profitChart"></canvas>
+    </div>
+</div>
+
+<br><br>
+
+<h2>Cash Flow</h2>
+<table border="1" cellpadding="10" cellspacing="0" width="100%">
+    <tr>
+        <th>Year</th>
+        <th>Operating Cash Flow</th>
+    </tr>
+    {% for item in cashflows %}
+    <tr>
+        <td>{{ item.year }}</td>
+        <td>{{ item.operating_activity }}</td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="2">No data available</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+const years = JSON.parse('{{ years|safe|escapejs }}');
+const sales = JSON.parse('{{ sales|safe|escapejs }}');
+const profits = JSON.parse('{{ net_profit|safe|escapejs }}');
+
+if (document.getElementById('salesChart')) {
+    new Chart(document.getElementById('salesChart'), {
+        type: 'line',
+        data: {
+            labels: years,
+            datasets: [{
+                label: 'Sales',
+                data: sales,
+                borderWidth: 2
+            }]
+        }
+    });
+}
+
+if (document.getElementById('profitChart')) {
+    new Chart(document.getElementById('profitChart'), {
+        type: 'bar',
+        data: {
+            labels: years,
+            datasets: [{
+                label: 'Net Profit',
+                data: profits,
+                borderWidth: 1
+            }]
+        }
+    });
+}
+</script>
+
+{% endblock %}
